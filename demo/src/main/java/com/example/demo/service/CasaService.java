@@ -1,12 +1,12 @@
-package service;
+package com.example.demo.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.model.Casa;
-import com.example.repository.CasaRepository;
+import com.example.demo.model.Casa;
+import com.example.demo.repository.CasaRepository;
 
 @Service
 public class CasaService 
@@ -66,8 +66,8 @@ public class CasaService
     }
         
         //Metódo para deletar a casa
-        public void deletarCasa(Long id)
-        {
+          public void deletarCasa(Long id)
+          {
           
           // Uma verificação para garantir que a casa existe antes de deletar
           if (!casaRepository.existsById(id))
@@ -76,7 +76,7 @@ public class CasaService
           }
 
           casaRepository.deleteById(id);
-        }
+          }
 
         
-    }   
+}   

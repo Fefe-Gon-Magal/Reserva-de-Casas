@@ -1,4 +1,4 @@
-package com.example.model;
+package com.example.demo.model;
 
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity // Marca esta classe como entidade JPA.
-@Table // Dafine o nome da tabela no banco de dados
+@Table(name = "reservas") 
 @Data // Gera getters, setters, toString, equals e hashCode
 @NoArgsConstructor
 @AllArgsConstructor

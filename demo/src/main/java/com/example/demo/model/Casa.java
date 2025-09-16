@@ -1,4 +1,4 @@
-package com.example.model;
+package com.example.demo.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 
 
 
-@Entity
+@Entity //Indica que a classe é uma entidade JPA
 @Table (name = "casas")
-@NoArgsConstructor
-@Data
-@AllArgsConstructor
+@NoArgsConstructor // Gera um construtor públicos sem argumentos
+@Data // Gera Automaticamente os getters e os setters
+@AllArgsConstructor // Gera um construtor público com todos os argumentos
 
 public class Casa 
 {
