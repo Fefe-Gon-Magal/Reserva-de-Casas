@@ -38,16 +38,35 @@ public class ReservaService
         //Garante que a casa associada é a do banco de dados
         reserva.setCasa(casa);                                                                                                                          
     
+        // Valida as datas (check-in não pode ser depois de check-out, datas futuras, etc)
         if (reserva.getCheckIn().isAfter(reserva.getCheckOut()))
         {
         throw new IllegalArgumentException("Data de chek-in não pode ser depois da data de check-out. ");
         }
+
         if (reserva.getCheckIn().isBefore(LocalDate.now()))
         {
          throw new IllegalArgumentException("Data de check-in deve ser no futuro. ");
 
         }
+            
+         // Verificar disponibilidade da casa para as datas 
+        List<Reserva> reservasConflitantes = reservaRepository.findByCasaAndCheckInBeforeAndCheckOutAfter(
+            casa,
+            reserva.getCheckOut(), // checkOut da NOVA reserva
+            reserva.getCheckIn()   // checkIn da NOVA reserva
+        );
 
+        if (!reservasConflitantes.isEmpty()) 
+        {
+            throw new IllegalArgumentException("A casa já está reservada para o período solicitado.");
+        }
+
+        //Verifica capacidade de pessoas  
+        if (reserva.getQuantidadePessoas() > casa.getCapacidadePessoas()) 
+        {
+            throw new IllegalArgumentException("A quantidade de pessoas excede a capacidade da casa.");
+        }
 
          return reservaRepository.save(reserva);
  
