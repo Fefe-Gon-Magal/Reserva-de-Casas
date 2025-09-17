@@ -81,7 +81,31 @@ public class CasaController
 
         }
      
-    }
+    } 
+
+      // Endpoint para listar casas com filtros (GET /api/casas/filtrar)
+      @GetMapping("/filtrar")
+      public ResponseEntity<List<Casa>> listarCasasFiltradas
+      (
+            @RequestParam(required = false) Double precoMax,
+            @RequestParam(required = false) Integer quartosMin,
+            @RequestParam(required = false) Integer banheirosMin,
+            @RequestParam(required = false) Double precoMin,
+            @RequestParam(required = false) Integer quartosMax,
+            @RequestParam(required = false) Integer banheirosMax
+      ) 
+    
+      {
+        List<Casa> casas = casaService.listarCasasComFiltro
+        (precoMax, quartosMin, banheirosMin, precoMin,
+        quartosMax,banheirosMax);
+        
+        return new ResponseEntity<>(casas, HttpStatus.OK);
+       }
+
+
+
+       
        //Endpoint para deletar uma casa (DELETE/api/casas/{id})
        @DeleteMapping("/{id}")
 

@@ -40,14 +40,14 @@ public class CasaService
         if (precoMin != null) 
         {
             casas = casas.stream()
-            .filter(casa -> casa.getPrecoDiaria() <= precoMin)
+            .filter(casa -> casa.getPrecoDiaria() >= precoMin)
             .collect(Collectors.toList());
         }
          
          if (quartosMax != null) 
         {
             casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeQuartos() >= quartosMax)
+            .filter(casa -> casa.getQuantidadeQuartos() <= quartosMax)
             .collect(Collectors.toList());
         }
        
@@ -63,7 +63,7 @@ public class CasaService
         if (banheirosMax != null) 
         {
             casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeBanheiros() >= banheirosMax)
+            .filter(casa -> casa.getQuantidadeBanheiros() <= banheirosMax)
             .collect(Collectors.toList());
         }
 
