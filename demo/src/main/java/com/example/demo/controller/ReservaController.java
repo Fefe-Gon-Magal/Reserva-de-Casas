@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.CasaResponseDTO;
+import com.example.demo.dto.ReservaRequestDTO;
+import com.example.demo.dto.ReservaResponseDTO;
 import com.example.demo.model.Reserva;
 import com.example.demo.service.ReservaService;
 
@@ -38,21 +41,33 @@ public class ReservaController
     //Endpoint para criar uma nova reserva (POST /api/reservas)
     @PostMapping
     
-    public ResponseEntity<Reserva> criarReserva(@RequestBody Reserva reserva)
-    {
-        try
-        {
-            Reserva novaReserva = reservaService.criarReserva(reserva);
-            return new ResponseEntity<>(novaReserva, HttpStatus.CREATED);
-        }
-        
-        catch (RuntimeException e)
-        {
-            //Captura exenções do serviço (ex: Casa não encontrada)
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        
-        }
+    public ResponseEntity<ReservaResponseDTO> criarReserva(@RequestBody ReservaRequestDTO  reservaRequestDTO)
     
+    {
+       Reserva reserva = new Reserva();
+
+       reserva.setNomeCliente(reservaRequestDTO.getNomeCliente());
+       reserva.setCheckIn(reservaRequestDTO.getCheckIn());
+       reserva.setCheckOut(reservaRequestDTO.getCheckOut());
+       reserva.setEmailCliente(reservaRequestDTO.getEmailCliente());
+       reserva.setCpfCliente(reservaRequestDTO.getCpfCliente());
+       reserva.setQuantidadePessoas(reservaRequestDTO.getQuantidadePessoas());
+
+       Reserva novaReserva = reservaService.criarReserva(reserva);
+       
+
+       ReservaResponseDTO responder = new ReservaResponseDTO();
+       
+       reserva.setCasa(responder.getCasa());
+       reserva.setNomeCliente(responder.getNomeCliente());
+       reserva.setCheckIn(responder.getCheckIn());
+       reserva.setCheckOut(responder.getCheckOut());
+       reserva.setEmailCliente(responder.getEmailCliente());
+       reserva.setCpfCliente(responder.getCpfCliente());
+       reserva.setQuantidadePessoas(responder.getQuantidadePessoas());
+
+      return new ResponseEntity<>(responder,HttpStatus.CREATED);
+
     }
     //Endpoint para listar todas as reservas (GET/api/reservas)
     @GetMapping

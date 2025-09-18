@@ -2,12 +2,16 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.CasaRequestDTO;
+import com.example.demo.dto.CasaResponseDTO;
 import com.example.demo.model.Casa;
 import com.example.demo.service.CasaService;
 
@@ -33,24 +37,56 @@ public class CasaController
         this.casaService = casaService;
      }
      
-     //Endpoint para cadastrar uma nova casa
+     //Endpoint para cadastrar uma nova casa, com o DTO
      @PostMapping
      
-     public ResponseEntity<Casa> cadastrarCasa(@RequestBody Casa casa) 
+     public ResponseEntity<CasaResponseDTO> cadastrarCasa(@RequestBody CasaRequestDTO casaRequestDTO) 
      
+     
+        // Converte CasaRequestDTO para a entidade Casa
+        // O ID é nulo porque será gerado pelo serviço/banco de dados
      {
+         Casa casa = new Casa ();
+         
+         casa.setNome (casaRequestDTO.getNome());
+         casa.setEndereco(casaRequestDTO.getEndereco());
+         casa.setCapacidadePessoas(casaRequestDTO.getCapacidadePessoas());
+         casa.setQuantidadeBanheiros(casaRequestDTO.getQuantidadeBanheiros());
+         casa.setQuantidadeQuartos(casaRequestDTO.getQuantidadeQuartos());
+         casa.setDescricao(casaRequestDTO.getDescricao());
+         casa.setLatitude(casaRequestDTO.getLatitude());
+         casa.setLongitude(casaRequestDTO.getLongitude());
+         casa.setPrecoDiaria(casaRequestDTO.getPrecoDiaria());
+      
         Casa novaCasa = casaService.cadastrarCasa(casa);
-        return new ResponseEntity<>(novaCasa,HttpStatus.CREATED);
+        
+        //Converte o DTO antes de devolver 
+        CasaResponseDTO resposta = new CasaResponseDTO();
+
+
+        resposta.setNome(novaCasa.getNome());
+        resposta.setEndereco(novaCasa.getEndereco());
+        resposta.setCapacidadePessoas(novaCasa.getCapacidadePessoas());
+        resposta.setPrecoDiaria(novaCasa.getPrecoDiaria());
+        resposta.setQuantidadeBanheiros(novaCasa.getQuantidadeBanheiros());
+        resposta.setQuantidadeQuartos(novaCasa.getQuantidadeQuartos());
+        resposta.setDescricao(casaRequestDTO.getDescricao());
+        resposta.setLatitude(casaRequestDTO.getLatitude());
+        resposta.setLongitude(casaRequestDTO.getLongitude());
+        
+        
+        return new ResponseEntity<>(resposta,HttpStatus.CREATED);
      }
      
-     //Endpoint para buscar uma casa por Id (Get/api/casas)
+     //Mudança feita para o Page
      @GetMapping
-     
-     public ResponseEntity<List<Casa>> listarTodasAsCasas() 
+     public ResponseEntity<Page<Casa>> listarTodasAsCasas(Pageable pageable)
      {
-         List<Casa> casas = casaService.listarTodasAsCasas();
-         return new ResponseEntity<>(casas, HttpStatus.OK);
-     }
+    
+      Page<Casa> casas = casaService.listarTodasAsCasas(pageable);
+      return new ResponseEntity<>(casas, HttpStatus.OK);
+    
+    }
      // Endpoint para buscar uma casa por ID (Get/ api/ casas/{id})
      @GetMapping("/{id}")
      
@@ -83,22 +119,26 @@ public class CasaController
      
     } 
 
-      // Endpoint para listar casas com filtros (GET /api/casas/filtrar)
+      // Endpoint para listar casas com filtros, também com paginação (GET /api/casas/filtrar)
       @GetMapping("/filtrar")
-      public ResponseEntity<List<Casa>> listarCasasFiltradas
+      public ResponseEntity<Page<Casa>> listarCasasFiltradas
       (
             @RequestParam(required = false) Double precoMax,
             @RequestParam(required = false) Integer quartosMin,
             @RequestParam(required = false) Integer banheirosMin,
             @RequestParam(required = false) Double precoMin,
             @RequestParam(required = false) Integer quartosMax,
-            @RequestParam(required = false) Integer banheirosMax
+            @RequestParam(required = false) Integer banheirosMax,
+            //Mudança feita para a paginação
+            Pageable pageable
+           
       ) 
     
       {
-        List<Casa> casas = casaService.listarCasasComFiltro
+      
+        Page<Casa> casas = casaService.listarCasasComFiltro
         (precoMax, quartosMin, banheirosMin, precoMin,
-        quartosMax,banheirosMax);
+        quartosMax,banheirosMax,pageable);
         
         return new ResponseEntity<>(casas, HttpStatus.OK);
        }

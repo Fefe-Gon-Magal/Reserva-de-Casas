@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Casa;
@@ -16,68 +19,47 @@ public class CasaService
      private final CasaRepository casaRepository;
   
      //Construtor para uma injeção de dependência
+     //injeção de dependência é uma tranferência de uma tarefa
+     //de criação do objeto para outra entidade(objeto/banco) eu usar diretamente a dependência
+     //Depências = bibliotecas de código que um projeto precisa para funcionar corretamente
   
     public CasaService(CasaRepository casaRepository)
     {
         this.casaRepository = casaRepository;
     }
   
+    //Mudança feita para o List ficar com paginação
 
-     public List<Casa> listarCasasComFiltro( Double precoMax,Integer quartosMin,Integer banheirosMin, Double precoMin, Integer quartosMax, Integer banheirosMax) 
+     public Page<Casa> listarCasasComFiltro( Double precoMax,Integer quartosMin,Integer banheirosMin, 
+     Double precoMin, Integer quartosMax, Integer banheirosMax,Pageable pageable) 
 
-     {
-        List<Casa> casas = casaRepository.findAll(); // Começa com todas as casas
+     {  
+    
+    // Usamos o findAll(peageable) (que já faz o LIMIT e OFFSET no SQL)
+     
+    // Busca todas as casas paginadas (primeiro vem todas as páginas do banco)
+    Page<Casa> casas = casaRepository.findAll(pageable);
 
-        // Aplica os filtros sequencialmente
-        if (precoMax != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getPrecoDiaria() <= precoMax)
-            .collect(Collectors.toList());
-        }
+    // Aplica os filtros "em memória"
+    List<Casa> filtradas = casas.getContent().stream()
+        .filter(casa -> precoMax == null || casa.getPrecoDiaria() <= precoMax)
+        .filter(casa -> precoMin == null || casa.getPrecoDiaria() >= precoMin)
+        .filter(casa -> quartosMax == null || casa.getQuantidadeQuartos() <= quartosMax)
+        .filter(casa -> quartosMin == null || casa.getQuantidadeQuartos() >= quartosMin)
+        .filter(casa -> banheirosMax == null || casa.getQuantidadeBanheiros() <= banheirosMax)
+        .filter(casa -> banheirosMin == null || casa.getQuantidadeBanheiros() >= banheirosMin)
+        .toList();
 
+    // Calcula os índices de início e fim da página
+    int start = (int) pageable.getOffset();
+    int end = Math.min(start + pageable.getPageSize(), filtradas.size());
 
-        if (precoMin != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getPrecoDiaria() >= precoMin)
-            .collect(Collectors.toList());
-        }
-         
-         if (quartosMax != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeQuartos() <= quartosMax)
-            .collect(Collectors.toList());
-        }
-       
+    // Garante que não dê erro se a página pedida for maior que o tamanho da lista
+    List<Casa> paginadas = (start <= end) ? filtradas.subList(start, end) : List.of();
 
-        if (quartosMin != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeQuartos() >= quartosMin)
-            .collect(Collectors.toList());
-        }
-
-          
-        if (banheirosMax != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeBanheiros() <= banheirosMax)
-            .collect(Collectors.toList());
-        }
-
-
-        if (banheirosMin != null) 
-        {
-            casas = casas.stream()
-            .filter(casa -> casa.getQuantidadeBanheiros() >= banheirosMin)
-            .collect(Collectors.toList());
-        }
-
-        return casas;
-
-     }
+    // Retorna o Page respeitando paginação e total de elementos
+    return new PageImpl<>(paginadas, pageable, filtradas.size());
+ }
 
 
     //Metodo para cadastrar uma nova casa 
@@ -89,13 +71,12 @@ public class CasaService
 
     }
   
-  
-    public List<Casa> listarTodasAsCasas() 
-    {
+  //Mudança feita para o page
+  public Page<Casa> listarTodasAsCasas(Pageable pageable) 
+  {
+    return casaRepository.findAll(pageable);
+  }
 
-        return casaRepository.findAll();
-
-    }
 
     //Método para buscar uma casa por ID
     public Optional<Casa> buscarCasaPorId(Long id)
