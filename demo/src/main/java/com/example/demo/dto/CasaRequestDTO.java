@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CasaRequestDTO 
 {
     private String nome;
+    private String cep;
     private String endereco;
     private Double precoDiaria;
     private Integer quantidadeQuartos;

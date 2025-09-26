@@ -51,6 +51,8 @@ public class Casa
     @Column(nullable = false)
     private Integer capacidadePessoas;
 
+    @Column(nullable = true)
+    private String cep;
 
 
 }

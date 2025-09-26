@@ -11,6 +11,7 @@ public class CasaResponseDTO
 {
     
     private Long id;
+    private String cep;
     private String nome;
     private String endereco;
     private Double precoDiaria;
