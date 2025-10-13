@@ -51,6 +51,8 @@ public class CasaController
      * @param casaRequestDTO DTO contendo os dados da casa a ser cadastrada.
      * @return ResponseEntity com o {@link CasaResponseDTO} da casa criada e status HTTP 201 (Created).
      */
+   
+   
     @PostMapping
     public ResponseEntity<CasaResponseDTO> cadastrarCasa(@RequestBody CasaRequestDTO casaRequestDTO) 
     {
@@ -126,12 +128,12 @@ public class CasaController
     /**
      * Endpoint para listar casas com filtros e suporte a paginação.
      * Permite filtrar por preço máximo/mínimo, quantidade de quartos e banheiros.
-     * @param precoMax Preço máximo da diária (opcional).
-     * @param quartosMin Quantidade mínima de quartos (opcional).
-     * @param banheirosMin Quantidade mínima de banheiros (opcional).
-     * @param precoMin Preço mínimo da diária (opcional).
-     * @param quartosMax Quantidade máxima de quartos (opcional).
-     * @param banheirosMax Quantidade máxima de banheiros (opcional).
+     * @param precoMax 
+     * @param quartosMin 
+     * @param banheirosMin 
+     * @param precoMin 
+     * @param quartosMax
+     * @param banheirosMax
      * @param pageable Objeto Pageable para definir a paginação.
      * @return ResponseEntity com uma página de entidades {@link Casa} filtradas e status HTTP 200 (OK).
      */
