@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.demo.dto.ViaCepResponseDTO;
 
-@FeignClient (name = "viacep", url = "https://viacep.com.br/ws")
+import config.FeignConfig;
+
+// Mudança para ErroDecoder 
+@FeignClient (name = "viacep", url = "https://viacep.com.br/ws", configuration = FeignConfig.class)
 public interface ViaCepFeignClient 
 {
 
